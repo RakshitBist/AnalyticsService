@@ -77,8 +77,6 @@ This architecture ensures **scalability, fault tolerance, and real-time analytic
 - Kafka & Zookeeper
 - PostgreSQL / MySQL
 
-### (Optional) Run with Docker Compose
-*(Add this file later if you want to run all services together)*
 
 ---
 
