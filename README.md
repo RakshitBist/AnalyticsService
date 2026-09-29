@@ -45,9 +45,9 @@ This architecture ensures **scalability, fault tolerance, and real-time analytic
 | Service | Purpose | GitHub Link |
 |--------|---------|-------------|
 | **Registration Service** | JWT + Refresh Token with versioning | https://github.com/6gaurav13/AnalyticsRegistration |
-| **Producer Service** | Sends analytics data to Kafka | https://github.com/6gaurav13/AnalyticsProducer |
-| **Consumer Service** | Reads from Kafka and stores in DB | https://github.com/6gaurav13/AnalyticsConsumer |
-| **Reporting Service** | Aggregates analytics and exposes APIs | https://github.com/6gaurav13/AnalyticsReporter |
+| **Producer Service** | Sends analytics data to Kafka | https://github.com/RakshitBist/AnalyticsProducer |
+| **Consumer Service** | Reads from Kafka and stores in DB | https://github.com/RakshitBist/AnalyticsConsumer |
+| **Reporting Service** | Aggregates analytics and exposes APIs | https://github.com/RakshitBist/AnalyticsReporter |
 
 ---
 
