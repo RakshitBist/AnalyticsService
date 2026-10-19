@@ -72,11 +72,48 @@ This architecture ensures **scalability, fault tolerance, and real-time analytic
 ## 📦 Running the System
 
 ### Prerequisites
-- Java 17+
-- Maven
-- Kafka & Zookeeper
-- PostgreSQL / MySQL
+- macOS with **Java 17+** and **Docker Desktop**
+- Python 3 and Git (both come with the Xcode command line tools)
 
+Maven, Kafka, PostgreSQL and Redis do not need installing: each service ships a Maven wrapper (`mvnw`) and the rest run in Docker.
+
+### Start everything with one command
+```bash
+git clone https://github.com/RakshitBist/AnalyticsService
+cd AnalyticsService
+./start.sh
+```
+
+`start.sh` will:
+1. open Docker Desktop if it isn't running
+2. start Kafka (port **9094**), PostgreSQL (5432) and Redis (6379) from `docker-compose.yml`
+3. register the demo app `app1` in Redis (the Registration service's job)
+4. download or update the Producer, Consumer and Reporter into `services/` and start them (logs in `logs/`)
+5. start the dashboard and open **http://localhost:8090**
+
+The first run takes a few minutes while Maven downloads libraries. Later runs take about 30 seconds.
+
+Stop everything with `./stop.sh`. Your data is kept for the next start.
+
+### Dashboard
+`dashboard.py` is a small web page, written using only the Python standard library, that:
+- shows which of the six parts are running
+- sends events through the Producer and animates them along the pipeline
+- shows the Reporter's live counts (events by type and by device)
+- can simulate traffic, and can test that one app can't read another app's report
+
+It signs its own demo JWT for `app1`, so no token setup is needed.
+
+### Ports
+| Part | Port |
+|---|---|
+| Producer | 8082 |
+| Consumer | 8083 |
+| Reporter | 8084 |
+| Dashboard | 8090 |
+| Kafka | 9094 |
+| PostgreSQL | 5432 |
+| Redis | 6379 |
 
 ---
 
