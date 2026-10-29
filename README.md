@@ -89,7 +89,7 @@ cd AnalyticsService
 2. start Kafka (port **9094**), PostgreSQL (5432) and Redis (6379) from `docker-compose.yml`
 3. register the demo app `app1` in Redis (the Registration service's job)
 4. download or update the Producer, Consumer and Reporter into `services/` and start them (logs in `logs/`)
-5. start the dashboard and open **http://localhost:8090**
+5. start the dashboard and open the side-by-side view at **http://localhost:8090/demo**
 
 The first run takes a few minutes while Maven downloads libraries. Later runs take about 30 seconds.
 
@@ -103,6 +103,26 @@ Stop everything with `./stop.sh`. Your data is kept for the next start.
 - can simulate traffic, and can test that one app can't read another app's report
 
 It signs its own demo JWT for `app1`, so no token setup is needed.
+
+### Demo shop
+`shop.html` is **Fernhouse**, a small plant shop that plays the customer-facing app. As you use it, it sends events to the Producer with a tiny built-in analytics client:
+
+| What the customer does | Event sent |
+|---|---|
+| Opens the shop | `page_view` |
+| Opens a plant | `view_product` |
+| Adds or removes a plant | `add_to_cart`, `remove_from_cart` |
+| Opens the basket, checks out, places an order | `view_cart`, `begin_checkout`, `purchase` |
+| Signs in, creates an account, signs out | `login`, `signup`, `logout` |
+| Searches or filters | `search`, `filter` |
+
+The dark strip at the bottom of the shop shows each event as it is sent, and lets you pretend to be on mobile or desktop.
+
+| Page | What it shows |
+|---|---|
+| http://localhost:8090/demo | the shop and the dashboard side by side |
+| http://localhost:8090/shop | the shop only |
+| http://localhost:8090 | the dashboard only |
 
 ### Ports
 | Part | Port |
