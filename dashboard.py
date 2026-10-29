@@ -28,6 +28,7 @@ REPORTER = "http://localhost:8084"
 # The surrounding quotes are part of the key, because the properties file includes them.
 SECRET = '"qwert123qwer123qweqwertyu2446dtrde56er6d6ttfy"'
 APP_ID = os.environ.get("APP_ID", "app1")
+HERE = os.path.dirname(os.path.abspath(__file__))
 CHECKS = {
     "producer": 8082, "consumer": 8083, "reporter": 8084,
     "kafka": 9094, "postgres": 5432, "redis": 6379,
@@ -87,8 +88,17 @@ class Handler(BaseHTTPRequestHandler):
         return self.headers.get("X-Token") or read_token()
 
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
+        path = self.path.split("?", 1)[0]
+        if path in ("/", "/index.html"):
             return self.send(200, PAGE, "text/html; charset=utf-8")
+        if path == "/shop":
+            try:
+                with open(os.path.join(HERE, "shop.html"), "rb") as f:
+                    return self.send(200, f.read(), "text/html; charset=utf-8")
+            except OSError:
+                return self.send(404, "shop.html not found next to dashboard.py", "text/plain")
+        if path == "/demo":
+            return self.send(200, DEMO, "text/html; charset=utf-8")
         if self.path == "/api/status":
             st = {k: port_open(p) for k, p in CHECKS.items()}
             st["token"] = bool(read_token())
@@ -140,7 +150,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
 header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
 h1{font-size:26px;font-weight:600;margin:0;letter-spacing:-.01em}
 .sub{color:var(--ink-2);margin:2px 0 0}
-.app-pick{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+.lnk{font-family:var(--sans);font-size:14px;color:var(--accent);margin-right:10px;text-decoration:none}
+.lnk:hover{text-decoration:underline}
+.app-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--ink-2)}
 .app-pick input{width:90px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
 .card h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);margin:0 0 14px}
@@ -218,7 +230,7 @@ pre{font:12px/1.5 var(--mono);background:var(--surface-2);padding:10px;border-ra
       <h1>Analytics Pipeline</h1>
       <p class="sub">Send events through Producer &rarr; Kafka &rarr; Consumer &rarr; PostgreSQL and watch the Reporter count them.</p>
     </div>
-    <div class="app-pick">viewing report for <input id="app" value="app1" aria-label="App id"></div>
+    <div class="app-pick"><a class="lnk" href="/shop" target="_blank">Open the shop</a><a class="lnk" href="/demo" target="_top">Side by side</a>viewing report for <input id="app" value="app1" aria-label="App id"></div>
   </header>
 
   <div class="banner" id="banner"></div>
@@ -413,6 +425,23 @@ setInterval(refreshReport, 2000);
 </html>
 """
 
+DEMO = r"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop and dashboard</title>
+<style>
+html,body{margin:0;height:100%;background:#121211;font:13px system-ui,sans-serif;color:#c3c2b7}
+.bar{min-height:34px;display:flex;align-items:center;gap:18px;padding:0 14px;flex-wrap:wrap}
+.bar b{color:#fff;font-weight:600}
+.bar a{color:#86b6ef;text-decoration:none}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:6px;height:calc(100% - 34px);padding:0 6px 6px;box-sizing:border-box}
+iframe{width:100%;height:100%;border:0;border-radius:8px;background:#fff}
+@media (max-width:900px){.split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+</style></head><body>
+<div class="bar"><b>Left: what the customer sees</b><b>Right: what the business sees</b><a href="/">Dashboard only</a><a href="/shop">Shop only</a></div>
+<div class="split"><iframe src="/shop" title="Fernhouse shop"></iframe><iframe src="/" title="Analytics dashboard"></iframe></div>
+</body></html>
+"""
+
 if __name__ == "__main__":
-    print(f"Dashboard running at http://localhost:{PORT}  (Ctrl + C to stop)")
+    print(f"Dashboard: http://localhost:{PORT}   Shop: http://localhost:{PORT}/shop   Both: http://localhost:{PORT}/demo   (Ctrl + C to stop)")
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

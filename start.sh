@@ -68,5 +68,5 @@ if ! up 8090; then
   nohup python3 dashboard.py > logs/dashboard.log 2>&1 &
   sleep 1
 fi
-open http://localhost:8090 2>/dev/null || true
-say "All running: http://localhost:8090   (stop with ./stop.sh)"
+open http://localhost:8090/demo 2>/dev/null || true
+say "All running: http://localhost:8090/demo   (stop with ./stop.sh)"
